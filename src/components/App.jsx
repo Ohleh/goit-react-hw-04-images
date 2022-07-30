@@ -1,6 +1,6 @@
 // import { render } from '@testing-library/react';
 
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import './styles.css';
 import { Audio } from 'react-loader-spinner';
 import imageAPI from '../Services/image-service.js';
@@ -9,87 +9,71 @@ import ImageGallery from './ImageGallery';
 import Button from './Button';
 import Modal from './Modal';
 
-class App extends Component {
-  state = {
-    page: 1,
-    query: '',
-    images: [],
-    imgSrc: [],
-    showModal: false,
-    status: false,
-    isVisible: false,
-  };
+const App = () => {
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState('');
+  const [images, setImages] = useState([]);
+  const [imgSrc, setImgSrc] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [status, setStatus] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
-  componentDidUpdate(prevProps, prevState) {
-    const { query, page, images } = this.state;
-
-    if (
-      prevState.query !== this.state.query ||
-      prevState.page !== this.state.page
-    ) {
-      this.setState(prevState => ({ status: !prevState.status }));
-
-      imageAPI
-        .getImages(query, page)
-        .then(data => {
-          if (data.hits.length === 0) {
-            alert('Sorry. There are no images');
-          } else {
-            this.setState(prevState => ({
-              images: [...prevState.images, ...data.hits],
-              isVisible: page <= Math.ceil(data.total / images.length),
-            }));
-          }
-        })
-        // .then(data => console.log(data))
-        .then(this.setState(prevState => ({ status: !prevState.status })));
+  useEffect(() => {
+    if (query === '') {
+      return;
     }
-  }
+    setStatus(s => !s);
+    imageAPI
+      .getImages(query, page)
+      .then(data => {
+        if (data.hits.length === 0) {
+          alert('Sorry. There are no images');
+        } else {
+          setImages(s => [...s, ...data.hits]);
+          setIsVisible(page <= Math.ceil(data.total / images.length));
+        }
+      })
+      .then(setStatus(s => !s));
+  }, [page, query]);
 
-  onFormInput = data => {
-    this.setState({ query: data, images: [], page: 1 });
+  const onFormInput = data => {
+    setQuery(data);
+    setImages([]);
+    setPage(1);
   };
 
-  HandleCklick = data => {
-    this.setState(prevState => ({ page: prevState.page + data }));
+  const HandleCklick = data => {
+    setPage(s => s + data);
   };
 
-  toggleModal = () => {
-    this.setState(prevState => ({ showModal: !prevState.showModal }));
+  const toggleModal = () => {
+    setShowModal(s => !s);
   };
 
-  onClickShowModal = data => {
-    this.setState({ imgSrc: data, showModal: true });
+  const onClickShowModal = data => {
+    setImgSrc(data);
+    setShowModal(true);
   };
 
-  render() {
-    const { images, showModal, status, isVisible } = this.state;
-
-    return (
-      <div>
-        <Searchbar onOnSubmit={this.onFormInput} />
-        {status && (
-          <Audio
-            height="80"
-            width="80"
-            radius="9"
-            color="green"
-            ariaLabel="three-dots-loading"
-            wrapperStyle
-            wrapperClass
-          />
-        )}
-        <ImageGallery
-          images={images}
-          onClickShowModal={this.onClickShowModal}
+  return (
+    <div>
+      <Searchbar onOnSubmit={onFormInput} />
+      {status && (
+        <Audio
+          height="80"
+          width="80"
+          radius="9"
+          color="green"
+          ariaLabel="three-dots-loading"
+          wrapperStyle
+          wrapperClass
         />
-        {isVisible && <Button onChange={this.HandleCklick} />}
-        {showModal && (
-          <Modal modalPhotos={this.state.imgSrc} onClose={this.toggleModal} />
-        )}
-      </div>
-    );
-  }
-}
+      )}
+      <ImageGallery images={images} onClickShowModal={onClickShowModal} />
+      {isVisible && <Button onChange={HandleCklick} />}
+      {showModal && <Modal modalPhotos={imgSrc} onClose={toggleModal} />}
+    </div>
+  );
+};
 
 export default App;

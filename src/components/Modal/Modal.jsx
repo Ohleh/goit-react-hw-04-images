@@ -35,7 +35,3 @@ class Modal extends Component {
 }
 
 export default Modal;
-
-//  <div className="Overlay" onClick={this.handleBgClick}></div>
-
-//
