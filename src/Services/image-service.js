@@ -15,14 +15,6 @@ const getImages = async (query, page) => {
   return data;
 };
 
-// const ddd = async (query, page) => {
-//   const { data } = await axios.get(`?q=${query}&page=${page}`);
-//   console.log(data);
-//   return data;
-// };
-
-// export default { getImages };
-
 const exprt = { getImages };
 
 export default exprt;
