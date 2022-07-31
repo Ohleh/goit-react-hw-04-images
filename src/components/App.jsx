@@ -17,6 +17,7 @@ const App = () => {
   const [showModal, setShowModal] = useState(false);
   const [status, setStatus] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [perPage] = useState(12);
 
   useEffect(() => {
     if (query === '') {
@@ -31,12 +32,11 @@ const App = () => {
           alert('Sorry. There are no images');
         } else {
           setImages(s => [...s, ...data.hits]);
-          setIsVisible(page < Math.ceil(data.total / data.hits.length));
-          console.log(data.hits.length);
+          setIsVisible(page < Math.ceil(data.total / perPage));
         }
       })
       .then(setStatus(s => !s));
-  }, [page, query]);
+  }, [page, query, perPage]);
 
   const onFormInput = data => {
     setQuery(data);
