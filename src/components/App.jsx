@@ -26,11 +26,13 @@ const App = () => {
     imageAPI
       .getImages(query, page)
       .then(data => {
+        console.log(data);
         if (data.hits.length === 0) {
           alert('Sorry. There are no images');
         } else {
           setImages(s => [...s, ...data.hits]);
-          setIsVisible(page <= Math.ceil(data.total / images.length));
+          setIsVisible(page < Math.ceil(data.total / data.hits.length));
+          console.log(data.hits.length);
         }
       })
       .then(setStatus(s => !s));
