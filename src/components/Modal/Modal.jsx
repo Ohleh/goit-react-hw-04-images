@@ -3,15 +3,17 @@ import '../styles.css';
 
 const Modal = ({ onClose, modalPhotos }) => {
   useEffect(() => {
+    const handleKeyDown = e => {
+      if (e.code === 'Escape') {
+        window.addEventListener('keydown', handleKeyDown);
+        onClose();
+      }
+    };
     window.addEventListener('keydown', handleKeyDown);
-  });
-
-  const handleKeyDown = e => {
-    if (e.code === 'Escape') {
+    return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      return onClose();
-    }
-  };
+    };
+  });
 
   const handleBgClick = e => {
     if (e.currentTarget === e.target) {

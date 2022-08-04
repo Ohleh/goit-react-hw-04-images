@@ -5,7 +5,7 @@ const Searchbar = ({ onOnSubmit }) => {
   const [queryMessage, setQueryMessage] = useState('');
 
   const handleChange = e => {
-    setQueryMessage(e.target.value);
+    setQueryMessage(e.target.value.trim());
   };
 
   const handleSubmit = e => {
